@@ -1,0 +1,130 @@
+<h2>AWS Portfolio Website</h2>
+
+This solution is a portfolio website containing code to build out a web application hosting a portfolio website which uses multiple microservices to add more functionality.<br><br>
+
+Below is the architectural diagram: <iframe frameborder="0" style="width:100%;height:500px;" src="https://viewer.diagrams.net/?highlight=0000ff&nav=1#R7V1bc5s4GP01ntl9SAZxs3n0JW470%2B5km3TTPmVkkDEbQF6Qa6e%2FfiUQGAR2cB0ZOyHJxNaHQEI6OufTBdHTxsHmQwSXiy%2FYQX5PVZxNT5v0VFVVLIt%2BMMtzagH6gFvcyHO4bWu4834hblS4deU5KC5FJBj7xFuWjTYOQ2STkg1GEV6Xo82xX051CV1UMdzZ0K9aHzyHLLIbU7b2j8hzF0Q4EMAsLjfEC%2BjgdcGk3fS0cYQxSb8FmzHyWeFlxZKeN91xNM9XhELS6IThwr7962o6Gv%2FSl%2FbfTw%2Fa949XA36Zn9Bf8RtexVcIxuSKH4nJc1YUS%2ByFJClOY0T%2FaHJjpWfQI2MWulYNwSCG%2B2UDqIbYNcoGMdwvG4B4eSCkD8QMFgyVUOnyipC%2BUsgg%2FdNGeEV8L0TjHHgKNboRdDxaI2Ps44jaQhzS0hstSODTEKBf1wuPoLsltFmprmmrobY5DgmHPlCzMC94dlUKbgJpWhG%2FRlITKLr5idIKSeP4PlzG3iw%2FK0L2Koq9n%2BgritOLMyvF4ZJ9DzYua7LXcB3r126EV8sk%2B59oWrVHHyPkeuzYKCYRfkLZHfZUTVGG%2BtBk%2BfZ8X7jznygiHm1OQ99z2YUJZulAHvLRnLAr0uLwQvdzEppoCi%2BCUhLsh9odGC%2BQw8uBg5cmgTY7mwXIGxtlKYQDRKJnGoWfYPHmyfnpSgNmalhvW3s%2Fi7QotHTd4BEhZxg3v%2Fa2FdIvvCEe0Ciz1ApNDzmUlHgQR2SBXRxC%2F2ZrHdEqCp2kYFgpbeN8xqzAk9L6FxHyzGEGVwSXcbmrwNO8sAzsLuF91BLjVWSjfRE1TuswctHeK1r1NRkhHxIK8zL319QKP%2FWWtZ4tArSBUYLAQKjX9Ab4SULV5rn4%2FdrOkitQcE81fcKrpIQD878Vzg5cpW16SCNYy01SUdlh%2Bs1ln8OHO3p0zFrgnLZBgmjoCwypZEVZEjTLaSrpGRXgxU%2BI2AuOqloBqBWBOiGoFYOqIJSiJRRdk4JorLP1q0ZQjZaxetVYZ6uTMPFsUHM2EM7eLSC7mmGRWql9MtF0fVxHxvPkp8iUSoGGP8MZ8m9x7JGEyyczTAgOXuRpGzG9qRLGPtGC8TK9rbm3YfmoV54Ipe0r1R2qWXGdAtlbDD8GKYIftcYCsJuedsqCoZR1Qa2qglEjCpnt1TVh0G9DE2gRRs%2Ffi4Ef7GIU3Dw42fCLp6HnYugWRR69%2BcRp2Yds%2BQJjNhUY7UiBOU721fcl%2B1bDWrF2tNTT1EqWTQnyfEdo%2Fm0a4QHNKCEzdR6tbCq4nThftjj3h0MAzHcjzrFUJdaMQUmJQZ0U6zVSrMtiBG0nI9B%2BbFjLCDNoP7kJV1%2FZKRoYMUTu7A%2FVYLijgeKXP2v5YkEIG%2FQasuyrU3sVU3A4OIBeGMIAXdsUKlviSLPSEcdFEcdgrE%2Bn03MhDksyb9D2QN15Qy57mOflx1t658f%2FrsdoZeP%2FL3qMx%2FrxyanDKILPhQicJ3eOI1HdLwuVYhbhUh13ErqYh8Y3NAGNaYZfdXAKKK10Ss4ISseOOR7FFkDR3nfxA0U5svx%2FrykLqgEG%2B5ummtF6fXw5bTMrRAk901sKmjn2PUzjfL25u6cfw9tPXbf0sr3Lmz4w%2BqNz8S6ld0vh0nt0IUFr1vDkeZj5SoVz6Z9aZhua0Z5X2HT60DLalHJr96jBsWz9KbQjFKDkIv94aM3m%2FGh1km6W7%2BIZe9IHif19MLYPg5kD6XFfyH%2BesZOxeOskbkijC5EilAkkcAZj1LHFZbPF2FKNpM2%2BD7ZwnkMYYGcmkxb6Z8YK7a4CyIcEL3L00GjqJ7a7CkDifPNqFngkof4gSFaOqsp0FdpJs%2B%2B4%2F6K5%2F716itKYH2gC9WtV7s9GCYvcn9kkjAUr0pjhA%2BpooaOFjhYa9BNN%2FdxoQZdAC4qdI2VrzFBWoY8CcXR9ycsiDvo7ZWjr%2BpLS%2B5LiEJOmt9ybzBYcXPJiFOndxpxfz3WuWjMEWPUHRWS8GF81TzBXDZTBGahUSKDNkpriKKAfH%2B%2Fvb7uZ7begVt3MtgzB0lWBKWp83RMLltXu%2BOdWo36UJOqcBKvxczWck1tb2wZaWQor32HI3LyXKwC0OtKcZ%2FScNLkbeHojitwNPMkV4%2FZ7jwBUWuOlTUZKFwOruRjrbXQeB3v7gi9F1%2FqneASBNt4OZy%2BOUgwaOx3tjFJYhyFNjH8iqLUyIHYCl7TpGlkAWl0km2f0nFzSu7%2FYLjr3eMme1e%2B80ov2St%2FXOFEcxjJdUkM%2FO5e0ump2BO0nFDpsnNcJvHB%2FUz1oqn3HVn8C5BIoTiqQ45HP7WlucWNBsAuAqzhJ6vQLtc1%2B%2BSnbfHuIAuiypTtF0GU2CaCTt2Jv5mP3mmyabwgjVJXtxTa%2BDuj%2Fa7ZR6aOX0kUBIHUVXgKlAOdR8ruXQdMj2Wap6isCu7Z5ykOauAJMaYY0XRrSsiEACUijCrIK0PXSmXdYawFrfXGqpX2sXf6GcyfoVzVdUw7UVnrdptjrfuE59r74vMOh8dWBgDwZvXSeSDcg9DrQBK%2Byra5saJriA3qHxj8NNGX4goeNX3xb%2Bhiy%2Fs6d1us2FHwb4xbdhoKv6debRokZWt%2BwIX%2FUpPO1GnR%2BGvharQhaX7PKsDrJ%2FlxaNwnbwBdqPAvbDnRM3WgDOkYb0JFf25rasLaPfp%2FEkayvno%2BvOPKx22MMO6X%2FvyZjQb1uMdZbcR%2Ff62KsulctSXMrjco%2BYEbVrTRr3EpZrxECWvd4TwO3srFvkPL16cdJ1DKswEvjHsZx8U%2FhewxacT2O2XqkIZwGjX2PVpd%2BZ9ksuB7bd1B8Y1O7e6X9PKfJUxESpSnXrAueJt%2BrO7ownHGVb3m%2BLr6vsio8me0AdNHg9oWVKRlsX%2Fup3fwP"></iframe> <br><br>
+
+It contains a number of functions:<br>
+- Comment functionality<br>
+- Page View Counter<br>
+- Contact Form<br>
+- Backend functionality to add CVs and Blog posts to the page, without directly editing any HTML. Here's a working example of the website without the custom domain name, or the cloudfront distribution: http://jacklavelle.com.s3-website-us-east-1.amazonaws.com<br><br>
+
+The Solutions works as follows:<br><br>
+1. The website code is hosted in a static website in S3 (optionally fronted by CloudFront with a custom domain name / Certificate using Route 53 and Certificate Manager)<br>
+2. There is a REST api (portfolio API) hosted on API gateway which fronts three lambda functions which include the view counter microservice, and the comments microservice.<br>
+3. The View counter microservice sends increments a view counter, which stores an extra value in a DynamoDB table. This value is then retrieved and stored on the webpage.<br>
+4. The Comments microservice includes the ability to submit a comment, this is then stored in a dynamoDB database and then retrieved via another lambda function.<br>
+5. The Submit comments microservice is hosted behind an HTTP api hosted on API gateway, where a user submits a form on the webpage, and this is sent via SNS to the backend admins email.<br>
+6. There is a blog post creation microservice also which consists of a separate S3 bucket, Event Notifications, and a Lambda functions.<br>
+7. The user uploads either a text file (blog post) or a PDF (Resume) to an upload bucket. This triggers one of two event notifications. The PDF microservice takes the PDF and creates a presigned URL and creates a link available for download via the UI. The second, .txt event notification takes the body of the text, and grabs the index.html document from the website s3 bucket, and edits the html document to include the blog post, and reupload it to the S3 bucket. This lambda function is also able to include iframe links from draw.io and embed them into the webpage as a diagram.<br><br>
+
+<h1>High Level Steps to implement</h1><br><br>
+
+<h3>Deploy The submit Comments functionality</h3><br>
+
+1. Create the dynamodb table (BlogComments)<br>
+- Partition key=PostID (String)<br>
+- Sort key=CommentID (String)<br><br>
+
+2. Create the lambda policy<br><br>
+
+3. Create the lambda role and attach the policy (and the `AWSLambdaBasicExecutionRole` for logging purposes)<br>
+
+4. Create the lambda function - (`SubmitCommentsFunction.py`)<br>
+
+5. Test the functionality with a test event (`submit-test.json`)<br>
+
+6. Check our dynamodb table<br><br>
+
+<h3>Deploy The Get Comments functionality</h3><br><br>
+
+1. Create the lambda policy<br>
+
+2. Create the lambda role and attach the policy<br>
+
+3. Create the lambda function (`GetCommentsFunction.py`)<br>
+
+4. Test the functionality with a test event (`get-test.json`)<br>
+
+<h3>Add the contact form</h3><br>
+
+1. Create the sns topic.<br>
+
+2. Go to your email and confirm subscription<br>
+
+3. Create the lambda policy<br>
+
+4. Create the lambda role and attach the policy (and the `AWSLambdaBasicExecutionRole` for logging purposes)<br>
+
+5. Create the lambda function <br>
+
+6. Test the functionality with a test event (`contact-test.json`) - you should receive an email!<br><br>
+
+<h3>Create the HTTP API for our Contact Form</h3><br><br>
+
+1. Create via the lambda UI attaching as a trigger<br>
+
+2. Enable CORS<br>
+
+3. Then go in the APi gateway console and add: <br>
+
+- Access-Control-Allow-Origin = * <br>
+
+- Access-Control-Allow-Headers = content-type <br>
+
+- Access-Control-Allow-Methods = * <br>
+
+- Add the api endpoint url to your script.js file replacing 'submit-comment-api'example: https://1a2b3c4d.execute-api.us-east-1.amazonaws.com/RESOURCEPATH <br>
+
+<h3>Add the view counter</h3><br><br>
+
+- Create the dynamodb table (BlogViewCounts)<br>
+- Partition key=PostID (String)<br>
+- Create the lambda policy<br>
+- Create the lambda role and attach the policy (and the AWSLambdaBasicExecutionRole for logging purposes) <br>
+- Create the lambda function <br>
+- Test the functionality (use increment-test.json)<br><br>
+
+<h3>Create the portfolio API (get-comments, submit-comment, view-counter)</h3><br><br>
+
+- Create the REST API (it should look like this)<br><br>
+
+-/get-comments GET OPTIONS <br><br>
+
+- /submit-comment OPTIONS POST <br><br>
+
+- /view-counter OPTIONS GET <br><br>
+
+- Enable CORS and select lambda proxy integration on all methods and resources<br>
+
+- Create a new stage called 'dev' and publish the api<br>
+
+- Grab the full URLs and add them in the script.js file using the api path in the script.js file like this:<br>
+
+- https://1a2b3c4d5e.execute-api.us-east-1.amazonaws.com/dev/YOURPATH<br>
+
+<h3>Create our static website</h3><br><br>
+- Create the upload s3 bucket<br>
+- Create the static website bucket<br>
+- Copy the website files to the bucket<br>
+- Enable static website hosting on the bucket & add the bucket policy to the bucket<br>
+- Check the the s3 url - it should take you to your website<br>
+- Edit CORS on the bucket<br>
+
+<h3>Add the blog post / Resume addition microservice</h3><br><br>
+- Create the blog post upload bucket<br>
+- Create the lambda policy<br>
+- Create the lambda role (and the AWSLambdaBasicExecutionRole for logging purposes)<br>
+- Create the lambda function<br>
+- Add the event notifications to the upload bucket to trigger the blog creation lambda function (only working for pdf and .txt files)<br>
+-test the functionality (p.s this works if you have iframes from draw.io embedded in the text document, test using the test.pdf designed for your Resume, and blog.txt and AWS_AI_Blog_Generator_Website.txt)<br><br>
+
+<h3>Notes</h3><br><br>
+- If you want to remove blog posts, the only way currently is to reupload the orignal index.html document, as the lambda function triggered actually directly edits the index.html code on the website. Simply removing the blog post / resume from the upload bucket will not work, as they are already embedded into the index.html document of the web page.<br>
+
+If you upload a text file called Blog_Post_1.txt it will constuct a title from the file name like this: 'Blog Post 1' and add it as a H1 on the top of the post. You can include simple HTML tags in your .txt files to add some styling to your blog posts,This will get interpreted as HTML code when added to the index.html document on the web page and affect the styling. See my example website (you are reading it!), and read the AWS_AI_Blog_Generator_Website.txt example blog post within my repository for an example of various HTML tags which you can use to improve your posts. <br>
+
+If you are using iframes within your blog posts, you may need to edit the width and the height via parameters within the link (at the beginning of the link) and remove the ability for end users to edit or copy the diagram before you upload the blog post to your upload bucket (before you generate the link in draw.io there are check boxex.) For example, the height is 100% and the width is 500px. Feel free to define this however you want depending on what your diagrams look like.
+
+

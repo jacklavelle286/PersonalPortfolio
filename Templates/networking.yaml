@@ -1,25 +1,17 @@
-AWSTemplateFormatVersion: 2010-09-09
+AWSTemplateFormatVersion: '2010-09-09'
 Description: |
-  This cloudformation template is my portfolio website.
-
-Parameters:
-  DomainName:
-    Description: This is the custom domain name that you have already purchased, without any subdomains i.e example.com. NOTE! domain validation is handled automatically if all three of the following are true; The certificate domain is hosted in Amazon Route 53, the domain resides in your AWS account, and you are using DNS validation.
-    Type: String
-
+  This CloudFormation template is for a portfolio website, including a VPC, subnets, an ALB, and two EC2 instances.
 
 Resources:
-  # vpc 
   portfoliovpc:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: 10.0.0.0/16
       EnableDnsSupport: true
-      Tags:  
+      Tags:
         - Key: application
           Value: portfolio
 
-  # internet gateway
   vpcigw:
     Type: AWS::EC2::InternetGateway
     Properties:
@@ -33,44 +25,26 @@ Resources:
       VpcId: !Ref portfoliovpc
       InternetGatewayId: !Ref vpcigw
 
-  # Subnets
   publicsubnet1:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: us-east-1a
+      AvailabilityZone: !Select [0, !GetAZs '']
       VpcId: !Ref portfoliovpc
-      CidrBlock: 10.0.1.0/20
+      CidrBlock: 10.0.1.0/24
       MapPublicIpOnLaunch: true
-
 
   publicsubnet2:
     Type: AWS::EC2::Subnet
     Properties:
-      AvailabilityZone: us-east-1b
+      AvailabilityZone: !Select [1, !GetAZs '']
       VpcId: !Ref portfoliovpc
-      CidrBlock: 10.0.16.0/20
+      CidrBlock: 10.0.2.0/24
       MapPublicIpOnLaunch: true
 
-  private1:
-    Type: AWS::EC2::Subnet
-    Properties:
-      AvailabilityZone: us-east-1a
-      CidrBlock: 10.0.32.0/20
-      VpcId: !Ref portfoliovpc
-
-  private2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      AvailabilityZone: us-east-1b
-      CidrBlock: 10.0.48.0/20
-      VpcId: !Ref portfoliovpc
-
-  # ALB Security Group
   albsecuritygroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: ALBSG
-      GroupDescription: 443 from the world
+      GroupDescription: Access to the ALB from the internet
       VpcId: !Ref portfoliovpc
       SecurityGroupIngress:
         - IpProtocol: tcp
@@ -78,29 +52,51 @@ Resources:
           ToPort: 443
           CidrIp: 0.0.0.0/0
 
-  
-  #ec2 instance sg
   EC2InstanceSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: EC2InstanceSG
-      GroupDescription: "80 from ALB"
+      GroupDescription: Access from the ALB to the EC2 instances
       VpcId: !Ref portfoliovpc
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          SourceSecurityGroupId: !GetAtt albsecuritygroup.GroupId
-  
+          SourceSecurityGroupId: !Ref albsecuritygroup
 
-  # ACM Certificate
-  SiteCertificate:
-    Type: AWS::CertificateManager::Certificate
+  Instance1:
+    Type: AWS::EC2::Instance
     Properties:
-      DomainName: !Ref DomainName
-      ValidationMethod: DNS
+      ImageId: ami-0f3f3bd2e20420986
+      InstanceType: t2.micro
+      SecurityGroupIds:
+        - !Ref EC2InstanceSG
+      SubnetId: !Ref publicsubnet1
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          sudo yum update -y
+          sudo yum install -y httpd
+          sudo systemctl start httpd
+          sudo systemctl enable httpd
+          echo "<h1>Welcome to Portfolio Instance 1</h1>" > /var/www/html/index.html
 
-  # Application Load Balancer
+  Instance2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0f3f3bd2e20420986
+      InstanceType: t2.micro
+      SecurityGroupIds:
+        - !Ref EC2InstanceSG
+      SubnetId: !Ref publicsubnet2
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          sudo yum update -y
+          sudo yum install -y httpd
+          sudo systemctl start httpd
+          sudo systemctl enable httpd
+          echo "<h1>Welcome to Portfolio Instance 2</h1>" > /var/www/html/index.html
+
   myALB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
@@ -112,17 +108,14 @@ Resources:
         - !Ref publicsubnet1
         - !Ref publicsubnet2
       Type: application
-      
 
-  # Target Group for ALB
   myTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       VpcId: !Ref portfoliovpc
-      Port: 443
-      Protocol: HTTPS
+      Port: 80
+      Protocol: HTTP
 
-  # Listener for ALB
   myListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
@@ -133,4 +126,4 @@ Resources:
       Port: 443
       Protocol: HTTPS
       Certificates:
-        - CertificateArn: !Ref SiteCertificate
+        - CertificateArn: arn:aws:acm:us-east-1:147675757919:certificate/cd61881a-5dd9-4f50-877a-f7680204a8bf
