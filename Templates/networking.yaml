@@ -40,6 +40,23 @@ Resources:
       VpcId: !Ref portfoliovpc
       CidrBlock: 10.0.2.0/24
       MapPublicIpOnLaunch: true
+      
+  privatesubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select [0, !GetAZs '']
+      VpcId: !Ref portfoliovpc
+      CidrBlock: 10.0.3.0/24
+      MapPublicIpOnLaunch: false
+
+  privatesubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select [1, !GetAZs '']
+      VpcId: !Ref portfoliovpc
+      CidrBlock: 10.0.4.0/24
+      MapPublicIpOnLaunch: false
+
 
   albsecuritygroup:
     Type: AWS::EC2::SecurityGroup
@@ -63,67 +80,137 @@ Resources:
           ToPort: 80
           SourceSecurityGroupId: !Ref albsecuritygroup
 
-  Instance1:
-    Type: AWS::EC2::Instance
+
+  RouteTable:
+    Type: AWS::EC2::RouteTable
     Properties:
-      ImageId: ami-0f3f3bd2e20420986
-      InstanceType: t2.micro
-      SecurityGroupIds:
-        - !Ref EC2InstanceSG
+      VpcId: !Ref portfoliovpc
+
+
+  Route:
+    Type: AWS::EC2::Route
+    DependsOn: vpcigw
+    Properties:
+      RouteTableId: !Ref RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref vpcigw
+
+  SubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
       SubnetId: !Ref publicsubnet1
-      UserData:
-        Fn::Base64: |
-          #!/bin/bash
-          sudo yum update -y
-          sudo yum install -y httpd
-          sudo systemctl start httpd
-          sudo systemctl enable httpd
-          echo "<h1>Welcome to Portfolio Instance 1</h1>" > /var/www/html/index.html
+      RouteTableId: !Ref RouteTable
 
-  Instance2:
-    Type: AWS::EC2::Instance
+  SubnetRouteTableAssociationB:
+    Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      ImageId: ami-0f3f3bd2e20420986
-      InstanceType: t2.micro
-      SecurityGroupIds:
-        - !Ref EC2InstanceSG
       SubnetId: !Ref publicsubnet2
-      UserData:
-        Fn::Base64: |
-          #!/bin/bash
-          sudo yum update -y
-          sudo yum install -y httpd
-          sudo systemctl start httpd
-          sudo systemctl enable httpd
-          echo "<h1>Welcome to Portfolio Instance 2</h1>" > /var/www/html/index.html
+      RouteTableId: !Ref RouteTable
 
-  myALB:
+
+  LoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Application Load Balancer Security Group
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '443'
+          ToPort: '443'
+          CidrIp: 0.0.0.0/0
+      VpcId: !Ref portfoliovpc
+
+
+  LoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
-      Name: myPortfolioALB
-      Scheme: internet-facing
-      SecurityGroups:
-        - !Ref albsecuritygroup
+      Name: ApplicationLoadBalancer
       Subnets:
         - !Ref publicsubnet1
         - !Ref publicsubnet2
-      Type: application
 
-  myTargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      VpcId: !Ref portfoliovpc
-      Port: 80
-      Protocol: HTTP
+      SecurityGroups:
+        - !Ref LoadBalancerSecurityGroup
 
-  myListener:
+  LoadBalancerListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
-      DefaultActions:
-        - Type: forward
-          TargetGroupArn: !Ref myTargetGroup
-      LoadBalancerArn: !Ref myALB
+      LoadBalancerArn: !Ref LoadBalancer
       Port: 443
       Protocol: HTTPS
       Certificates:
         - CertificateArn: arn:aws:acm:us-east-1:147675757919:certificate/cd61881a-5dd9-4f50-877a-f7680204a8bf
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref ApplicationTargetGroup
+
+
+  ApplicationTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 30
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 15
+      HealthyThresholdCount: 5
+      UnhealthyThresholdCount: 3
+      Matcher:
+        HttpCode: '200'
+      Name: ApplicationTargetGroup
+      VpcId: !Ref portfoliovpc
+      Port: 80
+      Protocol: HTTP
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: '20'
+      Targets:
+        - Id: !Ref WebServerInstance1
+          Port: 80
+        - Id: !Ref WebServerInstance2
+          Port: 80
+
+  WebServerInstance1:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0f3f3bd2e20420986
+      InstanceType: t2.micro
+      SecurityGroupIds:
+        - !Ref EC2InstanceSG
+      SubnetId: !Ref privatesubnet1
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          sudo yum update -y
+          sudo yum install -y git
+          sudo systemctl start httpd
+          sudo systemctl enable httpd
+          cd /var/www/html
+          git clone https://github.com/jacklavelle286/PersonalPortfolio
+          cd PersonalPortfolio
+          mv * ..
+                  
+
+  WebServerInstance2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0f3f3bd2e20420986
+      InstanceType: t2.micro
+      SecurityGroupIds:
+        - !Ref EC2InstanceSG
+      SubnetId: !Ref privatesubnet2
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          sudo yum update -y
+          sudo yum install -y git
+          sudo systemctl start httpd
+          sudo systemctl enable httpd
+          cd /var/www/html
+          git clone https://github.com/jacklavelle286/PersonalPortfolio
+          cd PersonalPortfolio
+          mv * ..
+          
+
+  
