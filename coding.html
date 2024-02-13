@@ -37,23 +37,26 @@
     <div class="container text-center">
         <header>
             <h1 class="my-4">Python Coding Challenges &#128013</h1>
-            <p>Below you'll find a few coding challenges to test your ability in Python programming, integrated directly into my website! Currently, you can choose between a Prime Number Challenge, FizzBuzz, and a Factorial Finder. The processing logic is hosted as a microservice on AWS Step Functions, securely fronted by an API Gateway. Check out the portfolio page to see the full web architecture of this website.</p>
+            <p>Below you'll find a few coding challenges to test your ability in Python programming, integrated directly into my website! Currently, you can choose between a Prime Number Challenge, FizzBuzz, and more to come soon. The processing logic is hosted as a microservice on AWS Step Functions, securely fronted by an API Gateway. Check out the portfolio page to see the full web architecture of this website.</p>
         </header>
 
         <section>
             <div class="challenge-selection my-4">
                 <label for="challengeSelect">Select a Challenge:</label>
                 <select id="challengeSelect" class="form-control">
-                    <option value="primeNumbers">Prime Numbers</option>
-                    <option value="fizzBuzz">FizzBuzz</option>
-                    <option value="factorial">Factorial Finder</option>
+                    <option value="primeNumbers">Print Prime Numbers from X to Y</option>
+                    <option value="fizzBuzz">FizzBuzz from 1 to 100</option>
                 </select>
             </div>
             <div class="code-editor my-4">
                 <label for="editor">Write your code here:</label>
                 <div id="editor" style="height: 300px; width: 100%;"></div> <!-- Ace Editor will be embedded here -->
             </div>
-            <button id="runCode" class="btn btn-primary">Run Code</button>
+            
+            <button id="runCode" class="btn btn-primary">
+              <span id="buttonText">Run Code</span>
+              <span id="spinner" class="spinner-border spinner-border-sm ml-2" role="status" aria-hidden="true" style="display: none;"></span>
+          </button>
             <!-- Output Area for displaying execution results -->
             <div id="outputArea" class="output-area my-4"></div>
         </section>
@@ -61,6 +64,7 @@
 
     <!-- Initialize Ace Editor in coding.js -->
     <script src="coding.js"></script>
+    <script src="script.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

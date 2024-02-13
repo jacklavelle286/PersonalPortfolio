@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
  editor.session.setMode("ace/mode/python");
 
  const runButton = document.getElementById('runCode');
+ const buttonText = document.getElementById('buttonText');
+ const spinner = document.getElementById('spinner');
  const outputArea = document.getElementById('outputArea');
  const challengeSelect = document.getElementById('challengeSelect');
 
@@ -12,25 +14,27 @@ document.addEventListener('DOMContentLoaded', function() {
      const selectedChallenge = challengeSelect.value;
      const userCode = editor.getValue(); // Get code from Ace Editor
 
+     // Show spinner and disable button
+     buttonText.textContent = 'Running...';
+     spinner.style.display = 'inline-block';
+     runButton.disabled = true;
+
      // Determine which API endpoint to use based on the selected challenge
      let apiEndpoint;
      if (selectedChallenge === 'primeNumbers') {
-         apiEndpoint = 'https://your-api-gateway-url/prime-numbers';
+         apiEndpoint = 'API';
      } else if (selectedChallenge === 'fizzBuzz') {
-         apiEndpoint = 'https://your-api-gateway-url/fizzbuzz';
-     } else if (selectedChallenge === 'factorial') {
-         apiEndpoint = 'https://your-api-gateway-url/factorial';
-     }
-
-     // Ensure an endpoint is selected
-     if (apiEndpoint) {
-         sendCodeToAWS(apiEndpoint, userCode);
+         apiEndpoint = 'API';
      } else {
          outputArea.textContent = 'Error: Invalid challenge selected.';
+         hideSpinner();
+         return; // Exit the function if the challenge is invalid
      }
+
+     // If a valid endpoint is selected, send the code to AWS
+     sendCodeToAWS(apiEndpoint, userCode);
  });
 
- // Function to send code to AWS Lambda via specific API Gateway endpoint and handle response
  function sendCodeToAWS(apiEndpoint, code) {
      // Prepare the data to be sent in the request
      const requestData = {
@@ -53,6 +57,16 @@ document.addEventListener('DOMContentLoaded', function() {
      .catch((error) => {
          console.error('Error:', error);
          outputArea.textContent = `Error: ${error.message}`;
+     })
+     .finally(() => {
+         // Hide spinner and enable button
+         hideSpinner();
      });
+ }
+
+ function hideSpinner() {
+     buttonText.textContent = 'Run Code';
+     spinner.style.display = 'none';
+     runButton.disabled = false;
  }
 });

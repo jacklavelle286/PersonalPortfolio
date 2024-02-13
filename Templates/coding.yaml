@@ -46,50 +46,84 @@ Resources:
       FunctionName: FizzBuzzFunction
       Code:
         ZipFile: |
-          import boto3
           import json
-          def lambda_handler(event, context):
-              # Extract the code from the event
-              user_code = event.get('code', '')
+          import logging
+          from io import StringIO
+          import sys
 
-              # Set up the environment for FizzBuzz execution
-              # Note: This is a simplified example. In practice, you should include
-              # security measures to sanitize and safely execute the user code.
-              execution_output = execute_fizzbuzz(user_code)
+          # Set up logging
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          def lambda_handler(event, context):
+              # Log the entire event to inspect its structure
+              logger.info(f"Received event: {event}")
+
+              # Direct Lambda Function URLs pass the payload in the 'body' field when the function is invoked.
+              # The 'body' field is a JSON string, so it needs to be parsed.
+              try:
+                  if 'body' in event and isinstance(event['body'], str):
+                      event_body = json.loads(event['body'])
+                      user_code = event_body.get('code', '')
+                  else:
+                      # Fallback for any other structure (useful for testing locally)
+                      user_code = event.get('code', '')
+              except json.JSONDecodeError:
+                  logger.error("Error decoding JSON from event body")
+                  return {
+                      'statusCode': 400,
+                      'body': json.dumps({'error': 'Bad request'})
+                  }
+
+              # Basic input sanitization
+              safe_code = sanitize_code(user_code)
+
+              # Execute the sanitized user code and capture output
+              execution_output, error_output = execute_user_code(safe_code)
+
+              # Log the execution details
+              logger.info(f"Executed code: {safe_code}")
+              logger.info(f"Execution output: {execution_output}")
+              if error_output:
+                  logger.error(f"Execution error: {error_output}")
 
               # Prepare the response
               response = {
                   'statusCode': 200,
                   'body': json.dumps({
-                      'output': execution_output
+                      'output': execution_output if execution_output else error_output
                   })
               }
 
               return response
 
-          def execute_fizzbuzz(user_code):
-              # Placeholder for executing the FizzBuzz code submitted by the user.
-              # This function should safely execute the FizzBuzz logic and return the output.
-              # For the sake of this example, we're directly executing the user_code, which is NOT recommended in practice.
-              # You should implement a secure execution environment or a predefined FizzBuzz logic instead.
-              
-              # Example predefined FizzBuzz logic (replace direct user_code execution)
-              output = []
-              for i in range(1, 101):
-                  if i % 3 == 0 and i % 5 == 0:
-                      output.append('FizzBuzz')
-                  elif i % 3 == 0:
-                      output.append('Fizz')
-                  elif i % 5 == 0:
-                      output.append('Buzz')
-                  else:
-                      output.append(str(i))
-              return '\n'.join(output)
+          def sanitize_code(code):
+              # Basic sanitization to remove potentially harmful code
+              banned_keywords = ['import', 'exec', 'eval', '__', 'open', 'subprocess', 'input', 'os', 'sys']
+              for keyword in banned_keywords:
+                  code = code.replace(keyword, '')
+              return code
 
-              # Unsafe direct execution (for illustration only)
-              # exec(user_code)
-              # return "Execution completed. Check for any side-effects or errors."
+          def execute_user_code(code):
+              # Redirect stdout
+              original_stdout = sys.stdout
+              sys.stdout = StringIO()
 
+              execution_output, error_output = '', ''
+
+              try:
+                  # Execute the sanitized user code
+                  exec(code)
+                  # Capture the execution output
+                  execution_output = sys.stdout.getvalue()
+              except Exception as e:
+                  # Capture any execution errors
+                  error_output = str(e)
+              finally:
+                  # Restore original stdout
+                  sys.stdout = original_stdout
+
+              return execution_output, error_output
       MemorySize: 128
       Timeout: 183
       TracingConfig:
@@ -124,38 +158,165 @@ Resources:
       FunctionName: PrimeNumbersFunction
       Code:
         ZipFile: |
-          import boto3
-          import json
-          def lambda_handler(event, context):
-              # Extract the upper limit from the event. Default to 100 if not provided.
-              upper_limit = event.get('upperLimit', 100)
+          import logging
+          from io import StringIO
+          import sys
 
-              # Generate the list of prime numbers up to the upper limit
-              prime_numbers = generate_prime_numbers(upper_limit)
+          # Set up logging
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          def lambda_handler(event, context):
+              # Log the entire event to inspect its structure
+              logger.info(f"Received event: {event}")
+
+              # Parse the event body to extract user code
+              try:
+                  if 'body' in event and isinstance(event['body'], str):
+                      event_body = json.loads(event['body'])
+                      user_code = event_body.get('code', '')
+                  else:
+                      user_code = event.get('code', '')
+              except json.JSONDecodeError:
+                  logger.error("Error decoding JSON from event body")
+                  return {
+                      'statusCode': 400,
+                      'body': json.dumps({'error': 'Bad request'})
+                  }
+
+              # Basic input sanitization
+              safe_code = sanitize_code(user_code)
+
+              # Execute the sanitized user code and capture output
+              execution_output, error_output = execute_user_code(safe_code)
+
+              # Log the execution details and output
+              logger.info(f"Executed code: {safe_code}")
+              logger.info(f"Execution output: {execution_output}")
+              if error_output:
+                  logger.error(f"Execution error: {error_output}")
 
               # Prepare the response
               response = {
                   'statusCode': 200,
                   'body': json.dumps({
-                      'output': prime_numbers
+                      'output': execution_output if execution_output else error_output
                   })
               }
 
               return response
 
-          def generate_prime_numbers(limit):
-              primes = []
-              for num in range(2, limit + 1):
-                  is_prime = True
-                  for i in range(2, int(num ** 0.5) + 1):
-                      if num % i == 0:
-                          is_prime = False
-                          break
-                  if is_prime:
-                      primes.append(num)
-              return primes
+          def sanitize_code(code):
+              # Basic sanitization to remove potentially harmful code
+              banned_keywords = ['import', 'exec', 'eval', '__', 'open', 'subprocess', 'input', 'os', 'sys']
+              for keyword in banned_keywords:
+                  code = code.replace(keyword, '')
+              return code
 
-          
+          def execute_user_code(code):
+              # Set up an environment to execute the user code safely
+              original_stdout = sys.stdout
+              sys.stdout = StringIO()
+
+              execution_output, error_output = '', ''
+
+              try:
+                  # Execute the user's code
+                  exec(code)
+                  execution_output = sys.stdout.getvalue()
+              except Exception as e:
+                  # Capture any execution errors
+                  error_output = str(e)
+              finally:
+                  # Restore original stdout
+                  sys.stdout = original_stdout
+
+              return execution_output, error_output
+
+          import logging
+          from io import StringIO
+          import sys
+
+          # Set up logging
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          def lambda_handler(event, context):
+              # Log the entire event to inspect its structure
+              logger.info(f"Received event: {event}")
+
+              # Parse the event body to extract user code
+              try:
+                  if 'body' in event and isinstance(event['body'], str):
+                      event_body = json.loads(event['body'])
+                      user_code = event_body.get('code', '')
+                  else:
+                      user_code = event.get('code', '')
+              except json.JSONDecodeError:
+                  logger.error("Error decoding JSON from event body")
+                  return {
+                      'statusCode': 400,
+                      'body': json.dumps({'error': 'Bad request'})
+                  }
+
+              # Basic input sanitization
+              safe_code = sanitize_code(user_code)
+
+              # Execute the sanitized user code and capture output
+              execution_output, error_output = execute_user_code(safe_code)
+
+              # Log the execution details and output
+              logger.info(f"Executed code: {safe_code}")
+              logger.info(f"Execution output: {execution_output}")
+              if error_output:
+                  logger.error(f"Execution error: {error_output}")
+
+              # Prepare the response
+              response = {
+                  'statusCode': 200,
+                  'body': json.dumps({
+                      'output': execution_output if execution_output else error_output
+                  })
+              }
+
+              return response
+
+          def sanitize_code(code):
+              # Basic sanitization to remove potentially harmful code
+              banned_keywords = ['import', 'exec', 'eval', '__', 'open', 'subprocess', 'input', 'os', 'sys']
+              for keyword in banned_keywords:
+                  code = code.replace(keyword, '')
+              return code
+
+          def execute_user_code(code):
+              # Set up an environment to execute the user code safely
+              original_stdout = sys.stdout
+              sys.stdout = StringIO()
+
+              execution_output, error_output = '', ''
+
+              try:
+                  # Predefined logic to print prime numbers (1 to 100)
+                  exec(predefined_prime_logic() + "\n" + code)
+                  execution_output = sys.stdout.getvalue()
+              except Exception as e:
+                  error_output = str(e)
+              finally:
+                  sys.stdout = original_stdout
+
+              return execution_output, error_output
+
+          def predefined_prime_logic():
+              return """
+          for num in range(1, 101):
+              if num > 1:
+                  for i in range(2, int(num**0.5) + 1):
+                      if (num % i) == 0:
+                          break
+                  else:
+                      print(num)
+          """
+
       MemorySize: 128
       Timeout: 183
       TracingConfig:
@@ -190,7 +351,83 @@ Resources:
       FunctionName: FactorialFunction
       Code:
         ZipFile: |
-          import boto3
+          import json
+          import logging
+          from io import StringIO
+          import sys
+
+          # Set up logging
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          def lambda_handler(event, context):
+              # Log the entire event to inspect its structure
+              logger.info(f"Received event: {event}")
+
+              # Parse the event body to extract user code
+              try:
+                  if 'body' in event and isinstance(event['body'], str):
+                      event_body = json.loads(event['body'])
+                      user_code = event_body.get('code', '')
+                  else:
+                      user_code = event.get('code', '')
+              except json.JSONDecodeError:
+                  logger.error("Error decoding JSON from event body")
+                  return {
+                      'statusCode': 400,
+                      'body': json.dumps({'error': 'Bad request'})
+                  }
+
+              # Basic input sanitization
+              safe_code = sanitize_code(user_code)
+
+              # Execute the sanitized user code and capture output
+              execution_output, error_output = execute_user_code(safe_code)
+
+              # Log the execution details and output
+              logger.info(f"Executed code: {safe_code}")
+              logger.info(f"Execution output: {execution_output}")
+              if error_output:
+                  logger.error(f"Execution error: {error_output}")
+
+              # Prepare the response
+              response = {
+                  'statusCode': 200,
+                  'body': json.dumps({
+                      'output': execution_output if execution_output else error_output
+                  })
+              }
+
+              return response
+
+          def sanitize_code(code):
+              # Basic sanitization to remove potentially harmful code
+              banned_keywords = ['import', 'exec', 'eval', '__', 'open', 'subprocess', 'input', 'os', 'sys']
+              for keyword in banned_keywords:
+                  code = code.replace(keyword, '')
+              return code
+
+          def execute_user_code(code):
+              # Set up an environment to execute the user code safely
+              original_stdout = sys.stdout
+              sys.stdout = StringIO()
+
+              execution_output, error_output = '', ''
+
+              try:
+                  # Execute the user's code
+                  exec(code)
+                  # Capture the execution output
+                  execution_output = sys.stdout.getvalue()
+              except Exception as e:
+                  # Capture any execution errors
+                  error_output = str(e)
+              finally:
+                  # Restore original stdout
+                  sys.stdout = original_stdout
+
+              return execution_output, error_output
+
           import json
           def lambda_handler(event, context):
               # Extract the number from the event. Default to 5 if not provided.
