@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI Blog Generator</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="index.html">My Website</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="blog.html">Porfolio</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="aws.html">AWS News</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="coding.html">Coding Challenges</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="ai.html">AI Blog</a>
+          </li>
+        </ul>
+      </div>
+      <button id="dark-mode-toggle">Toggle Dark Mode</button>
+  </nav>
+
+    <div class="container text-center">
+        <header>
+            <h1 class="my-4">Personalized AI Generated Blog Posts &#129302;</h1>
+            <p>This page interacts with the GPT-4 API through the user interface and uses AWS Lambda to generate a 
+             blog post, and make it available for download. You simply have to select a prompt, 
+             give a word limit and click submit, your blog post will be ready in no time! 
+             NOTE: When you are using this your are bound to the OpenAI terms of use, and if you include a prompt which
+              is against the OpenAI terms of service, you will receive a blog post containing a
+               message pertaining to this. Read more about this <a href="https://openai.com/policies/terms-of-use" target="_blank">here.</a></p>
+        </header>
+
+        <form id="ai-blog-form">
+            <section id="blog-prompt" class="my-4">
+                <input type="text" id="ai-prompt" placeholder="Describe your post topic" class="form-control" />
+            </section>
+
+            <section id="word-count" class="my-4">
+                <label for="word-count-slider">Word Count: <span id="word-count-display">500</span> words</label>
+                <input type="range" id="word-count-slider" min="0" max="1000" value="500" class="form-control-range" oninput="updateWordCountDisplay(this.value)" />
+            </section>
+
+            <section id="submit-button" class="my-4">
+             <button type="submit" class="btn btn-primary">Generate Blog Post</button>
+            </section>
+         
+           <!-- Spinner container -->
+           <div id="spinner-container" style="display: none; align-items: center; justify-content: center; height: 100vh;">
+               <!-- Spinner element -->
+               <div id="loading-spinner" class="spinner-border text-primary" role="status">
+                   <span class="sr-only">Loading...</span>
+               </div>
+           </div>
+        
+        </form>
+
+        <section id="download-link-section" class="my-4">
+            <a id="download-link" href="#" style="display: none;">Download Blog Post</a>
+        </section>
+
+        <!-- Error message container -->
+        <div id="error-message-container" style="display: none; align-items: center; justify-content: center; height: 100vh; position: fixed; width: 100%; top: 0; left: 0; z-index: 1000; background-color: rgba(255, 255, 255, 0.8);">
+         <div class="alert alert-danger" role="alert">
+             Sorry, there is an issue, please try again later!
+             <button type="button" class="close" aria-label="Close" onclick="document.getElementById('error-message-container').style.display='none';">
+                 <span aria-hidden="true">&times;</span>
+             </button>
+         </div>
+        </div>
+
+
+    </div>
+
+    <script src="ai.js" ></script>
+    <script src="script.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
