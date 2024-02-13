@@ -1,0 +1,249 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  This template is the 'coding' microservice. It will work as follows:
+  - a single lambda funciton will take the input from the server side javascript code, run the code then return the code to the frontend
+
+Resources:
+  CodingRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/"
+      RoleName: "coding-role"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: "lambda.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: "CodingPolicy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: "Logging"  
+                Effect: "Allow"
+                Action: 
+                  - "logs:CreateLogGroup"
+                Resource: 
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+              - Sid: "CreateLogStream"  
+                Effect: "Allow"
+                Action: 
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: 
+                  - "*"   
+
+  
+
+  FizzBuzzFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Handler: "index.lambda_handler"
+      Role: !GetAtt CodingRole.Arn
+      Runtime: "python3.12"
+      FunctionName: FizzBuzzFunction
+      Code:
+        ZipFile: |
+          import boto3
+          import json
+          def lambda_handler(event, context):
+              # Extract the code from the event
+              user_code = event.get('code', '')
+
+              # Set up the environment for FizzBuzz execution
+              # Note: This is a simplified example. In practice, you should include
+              # security measures to sanitize and safely execute the user code.
+              execution_output = execute_fizzbuzz(user_code)
+
+              # Prepare the response
+              response = {
+                  'statusCode': 200,
+                  'body': json.dumps({
+                      'output': execution_output
+                  })
+              }
+
+              return response
+
+          def execute_fizzbuzz(user_code):
+              # Placeholder for executing the FizzBuzz code submitted by the user.
+              # This function should safely execute the FizzBuzz logic and return the output.
+              # For the sake of this example, we're directly executing the user_code, which is NOT recommended in practice.
+              # You should implement a secure execution environment or a predefined FizzBuzz logic instead.
+              
+              # Example predefined FizzBuzz logic (replace direct user_code execution)
+              output = []
+              for i in range(1, 101):
+                  if i % 3 == 0 and i % 5 == 0:
+                      output.append('FizzBuzz')
+                  elif i % 3 == 0:
+                      output.append('Fizz')
+                  elif i % 5 == 0:
+                      output.append('Buzz')
+                  else:
+                      output.append(str(i))
+              return '\n'.join(output)
+
+              # Unsafe direct execution (for illustration only)
+              # exec(user_code)
+              # return "Execution completed. Check for any side-effects or errors."
+
+      MemorySize: 128
+      Timeout: 183
+      TracingConfig:
+        Mode: "PassThrough"
+      EphemeralStorage:
+        Size: 512
+
+  FizzBuzzURL:
+    Type: AWS::Lambda::Url
+    Properties:
+      AuthType: "NONE" # Required
+      Cors:
+        AllowCredentials: false
+        AllowHeaders:
+          - "*"
+        AllowMethods:
+          - "*"
+        AllowOrigins:
+          - "*"
+        ExposeHeaders:
+          - "*"
+      InvokeMode: "BUFFERED"
+      TargetFunctionArn: !GetAtt FizzBuzzFunction.Arn
+
+
+  PrimeNumbersFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Handler: "index.lambda_handler"
+      Role: !GetAtt CodingRole.Arn
+      Runtime: "python3.12"
+      FunctionName: PrimeNumbersFunction
+      Code:
+        ZipFile: |
+          import boto3
+          import json
+          def lambda_handler(event, context):
+              # Extract the upper limit from the event. Default to 100 if not provided.
+              upper_limit = event.get('upperLimit', 100)
+
+              # Generate the list of prime numbers up to the upper limit
+              prime_numbers = generate_prime_numbers(upper_limit)
+
+              # Prepare the response
+              response = {
+                  'statusCode': 200,
+                  'body': json.dumps({
+                      'output': prime_numbers
+                  })
+              }
+
+              return response
+
+          def generate_prime_numbers(limit):
+              primes = []
+              for num in range(2, limit + 1):
+                  is_prime = True
+                  for i in range(2, int(num ** 0.5) + 1):
+                      if num % i == 0:
+                          is_prime = False
+                          break
+                  if is_prime:
+                      primes.append(num)
+              return primes
+
+          
+      MemorySize: 128
+      Timeout: 183
+      TracingConfig:
+        Mode: "PassThrough"
+      EphemeralStorage:
+        Size: 512
+
+  PrimeNumbersURL:
+    Type: AWS::Lambda::Url
+    Properties:
+      AuthType: "NONE" # Required
+      Cors:
+        AllowCredentials: false
+        AllowHeaders:
+          - "*"
+        AllowMethods:
+          - "*"
+        AllowOrigins:
+          - "*"
+        ExposeHeaders:
+          - "*"
+      InvokeMode: "BUFFERED"
+      TargetFunctionArn: !GetAtt PrimeNumbersFunction.Arn
+ 
+
+  FactorialFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Handler: "index.lambda_handler"
+      Role: !GetAtt CodingRole.Arn
+      Runtime: "python3.12"
+      FunctionName: FactorialFunction
+      Code:
+        ZipFile: |
+          import boto3
+          import json
+          def lambda_handler(event, context):
+              # Extract the number from the event. Default to 5 if not provided.
+              number = event.get('number', 5)
+
+              # Calculate the factorial of the number
+              factorial_result = calculate_factorial(number)
+
+              # Prepare the response
+              response = {
+                  'statusCode': 200,
+                  'body': json.dumps({
+                      'output': f'The factorial of {number} is {factorial_result}'
+                  })
+              }
+
+              return response
+
+          def calculate_factorial(n):
+              # Base case: 1! = 1
+              if n == 1 or n == 0:
+                  return 1
+              # Recursive case: n! = n * (n-1)!
+              else:
+                  return n * calculate_factorial(n-1)
+
+          
+      MemorySize: 128
+      Timeout: 183
+      TracingConfig:
+        Mode: "PassThrough"
+      EphemeralStorage:
+        Size: 512
+
+
+  FactorialURL:
+    Type: AWS::Lambda::Url
+    Properties:
+      AuthType: "NONE" # Required
+      Cors:
+        AllowCredentials: false
+        AllowHeaders:
+          - "*"
+        AllowMethods:
+          - "*"
+        AllowOrigins:
+          - "*"
+        ExposeHeaders:
+          - "*"
+      InvokeMode: "BUFFERED"
+      TargetFunctionArn: !GetAtt FactorialFunction.Arn
+
+
+
+  
+
